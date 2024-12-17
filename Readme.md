@@ -2,6 +2,10 @@
 
 Gema CLI is an AI assistant for your terminal that can run commands based on your queries. It leverages the power of AI to understand your requests and suggest appropriate commands to execute.
 
+## DEMO
+
+[![Gema CLI Demo](https://img.youtube.com/vi/yklcZ4dNYWg/0.jpg)](https://youtu.be/yklcZ4dNYW)
+
 ## Installation
 
 To install Gema CLI, clone the repository and build the executable:
