@@ -3,6 +3,7 @@ module github.com/4nkitd/gemini-cli
 go 1.23.4
 
 require (
+	github.com/elastic/go-sysinfo v1.15.0
 	github.com/google/generative-ai-go v0.19.0
 	github.com/spf13/cobra v1.8.1
 	google.golang.org/api v0.186.0
@@ -15,6 +16,7 @@ require (
 	cloud.google.com/go/auth/oauth2adapt v0.2.2 // indirect
 	cloud.google.com/go/compute/metadata v0.3.0 // indirect
 	cloud.google.com/go/longrunning v0.5.7 // indirect
+	github.com/elastic/go-windows v1.0.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
@@ -25,6 +27,8 @@ require (
 	github.com/googleapis/enterprise-certificate-proxy v0.3.2 // indirect
 	github.com/googleapis/gax-go/v2 v2.12.5 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
+	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.51.0 // indirect
@@ -43,4 +47,5 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240617180043-68d350f18fd4 // indirect
 	google.golang.org/grpc v1.64.1 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
+	howett.net/plist v0.0.0-20181124034731-591f970eefbb // indirect
 )

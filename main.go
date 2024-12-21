@@ -18,6 +18,7 @@ type model struct {
 }
 
 func main() {
+
 	rootCmd := &cobra.Command{
 		Use:   "use",
 		Short: "A CLI tool to execute commands",

@@ -39,7 +39,15 @@ func AskQuery(query string) AiResponse {
 	model := client.GenerativeModel(defaultModel)
 	model.Temperature = &aiTemp
 
-	model.SystemInstruction = &genai.Content{Parts: []genai.Part{genai.Text(SystemInstruction)}}
+	sysInfo := ""
+	sysErr := error(nil)
+	if sysInfo, sysErr = GetSystemInfo(); err != nil {
+		log.Fatal(sysErr)
+	}
+
+	finalPrompt := sysInfo + SystemInstruction
+
+	model.SystemInstruction = &genai.Content{Parts: []genai.Part{genai.Text(finalPrompt)}}
 	model.ResponseMIMEType = "application/json"
 	model.ResponseSchema = &genai.Schema{
 		Type: genai.TypeObject,
