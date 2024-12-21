@@ -8,6 +8,12 @@ Gema CLI is an AI assistant for your terminal that can run commands based on you
 
 ## Installation
 
+### Install (macOS / Linux)
+
+```bash
+$ curl -sSL https://git.io/gobackup | bash
+```
+
 To install Gema CLI, clone the repository and build the executable:
 
 ```sh
