@@ -12,10 +12,11 @@ import (
 
 // GitCommitCmd represents the git commit command
 var GitCommitCmd = &cobra.Command{
-	Use:   "commit [path]",
-	Short: "Generate an AI commit message and optionally commit changes",
-	Long:  "Generate a commit message using AI for uncommitted changes and optionally commit them",
-	Args:  cobra.MaximumNArgs(1),
+	Use:     "commit [path]",
+	Aliases: []string{"c"},
+	Short:   "Generate an AI commit message and optionally commit changes",
+	Long:    "Generate a commit message using AI for uncommitted changes and optionally commit them",
+	Args:    cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		path := "."
 		if len(args) > 0 {

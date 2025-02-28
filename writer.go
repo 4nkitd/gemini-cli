@@ -4,30 +4,42 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
 // WriterCmd represents the writer command
 var WriterCmd = &cobra.Command{
-	Use:   "writer [text]",
-	Short: "Revises text to be more professional using Gemini AI",
+	Use:     "writer [text]",
+	Aliases: []string{"revise", "edit", "improve", "refine", "w"},
+	Short:   "Revises text to be more professional using Gemini AI",
 	Long: `A command that uses the Gemini API to revise input text and make it more professional.
 It maintains the original length unless instructed otherwise with [length=X] or [type=email] tags.`,
 	Args: cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		selectedText := args[0]
 
+		// Indicate processing
+		processingMsg := color.New(color.FgYellow).PrintFunc()
+		processingMsg("Processing your text with Gemini AI...\n")
+
 		extractedText, err := extractGeminiText(selectedText)
 		if err != nil {
+			errorMsg := color.New(color.FgRed, color.Bold).PrintFunc()
+			errorMsg("Error: " + err.Error())
 			return err
 		}
 
+		// Print success indicator and the resulting text
+		successMsg := color.New(color.FgGreen, color.Bold).PrintFunc()
+		successMsg("✓ Professional revision complete:\n\n")
 		fmt.Println(extractedText)
 		return nil
 	},
 }
 
 func extractGeminiText(selectedText string) (string, error) {
+	// Rest of the function remains the same...
 	systemPrompt := fmt.Sprintf(`
 	Please revise the following text to be more professional. Maintain the original length as closely as possible, unless a length constraint or output type is specified.
 

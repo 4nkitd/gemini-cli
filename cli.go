@@ -2,21 +2,22 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os/exec"
 	"strings"
 	"time"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
 // WriterCmd represents the writer command
 var MakeCmd = &cobra.Command{
-	Use:   "cli [text]",
-	Short: "ask questions about cli tool and other things",
-	Long:  `ask questions about cli tool and other things.`,
-	Args:  cobra.ExactArgs(1),
-	RunE:  executeMakeCommand,
+	Use:     "cli [text]",
+	Aliases: []string{"ask"},
+	Short:   "ask questions about cli tool and other things",
+	Long:    `ask questions about cli tool and other things.`,
+	Args:    cobra.ExactArgs(1),
+	RunE:    executeMakeCommand,
 }
 
 func executeMakeCommand(cmd *cobra.Command, args []string) error {
@@ -27,7 +28,7 @@ func executeMakeCommand(cmd *cobra.Command, args []string) error {
 
 	if m.command != "" {
 		var input string
-		fmt.Print("Run command (y for yes, n for no): ")
+		color.New(color.FgYellow).Print("Run command (y for yes, n for no): ")
 		fmt.Scanln(&input)
 		if input == "y" {
 			runCommand(m.command)
@@ -38,8 +39,28 @@ func executeMakeCommand(cmd *cobra.Command, args []string) error {
 }
 
 func waitForResponse(m model) model {
+	// Show animated loading dots
+	done := make(chan bool)
+	go func() {
+		loadingChars := []string{"|", "/", "-", "\\"}
+		i := 0
+		for {
+			select {
+			case <-done:
+				return
+			default:
+				color.New(color.FgCyan).Printf("\rLoading %s", loadingChars[i%len(loadingChars)])
+				time.Sleep(100 * time.Millisecond)
+				i++
+			}
+		}
+	}()
+
 	time.Sleep(3 * time.Second)
 	genaiResponse := AskQuery(m.query)
+	done <- true
+	fmt.Print("\r") // Clear the loading line
+
 	m.loading = false
 	m.response = genaiResponse.Response
 	m.command = genaiResponse.Command
@@ -48,18 +69,26 @@ func waitForResponse(m model) model {
 
 func (m model) View() string {
 	if m.loading {
-		return "Loading..."
+		return color.CyanString("Loading...")
 	}
-	return fmt.Sprintf("\nResponse:\n%s\n\nSuggested Command to RUN: %s\n", formatResponse(m.response), m.command)
+
+	responseHeader := color.New(color.FgGreen, color.Bold).Sprint("\nResponse:")
+	commandHeader := color.New(color.FgYellow, color.Bold).Sprint("\nSuggested Command to RUN: ")
+	formattedResponse := formatResponse(m.response)
+	commandText := color.New(color.FgHiYellow).Sprint(m.command)
+
+	return fmt.Sprintf("%s\n%s\n%s%s\n", responseHeader, formattedResponse, commandHeader, commandText)
 }
 
 func runCommand(command string) {
+	color.New(color.FgBlue).Printf("Executing: %s\n", command)
 	out, err := exec.Command("bash", "-c", command).Output()
 	if err != nil {
-		log.Printf("Error executing command: %v\n", err)
+		color.New(color.FgRed).Printf("Error executing command: %v\n", err)
 		return
 	}
-	fmt.Printf("Output:\n=> %s\n", strings.ReplaceAll(string(out), "dump.rdb", ""))
+	color.New(color.FgGreen).Println("Output:")
+	fmt.Printf("=> %s\n", strings.ReplaceAll(string(out), "dump.rdb", ""))
 }
 
 func formatResponse(response string) string {
