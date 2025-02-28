@@ -4,6 +4,7 @@ go 1.23.4
 
 require (
 	github.com/elastic/go-sysinfo v1.15.0
+	github.com/fatih/color v1.18.0
 	github.com/google/generative-ai-go v0.19.0
 	github.com/spf13/cobra v1.8.1
 	google.golang.org/api v0.186.0
@@ -27,6 +28,8 @@ require (
 	github.com/googleapis/enterprise-certificate-proxy v0.3.2 // indirect
 	github.com/googleapis/gax-go/v2 v2.12.5 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
