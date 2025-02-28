@@ -22,12 +22,14 @@ mv gema /usr/local/bin/
 
 ## Setup
 
-Before using Gema CLI, set your Gemini API key as an environment variable:
+Before using Gema CLI, set your Gemini API key and default model as environment variables:
 
 ```bash
 export GENAI_API_KEY=your_api_key
-export GENAI_DEFAULT_MODEL="models/gemini-2.0-flash-exp"
+export GENAI_DEFAULT_MODEL="gemini-2.0-flash-exp"
 ```
+
+You can obtain your API key from [Google AI Studio](https://aistudio.google.com/).
 
 Add these to your `.bashrc`, `.zshrc`, or equivalent for persistence.
 
