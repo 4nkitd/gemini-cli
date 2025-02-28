@@ -1,6 +1,6 @@
 # Gema CLI
 
-Gema CLI is an AI assistant for your terminal that can run commands based on your queries. It leverages the power of AI to understand your requests and suggest appropriate commands to execute.
+Gema CLI is an AI assistant for your terminal that leverages Gemini AI to help with text refinement, command suggestions, and Git commit messages. It's designed to make your terminal experience more productive through AI-powered assistance.
 
 ## DEMO
 
@@ -8,61 +8,83 @@ Gema CLI is an AI assistant for your terminal that can run commands based on you
 
 ## Installation
 
-### Install (macOS / Linux)
+```bash
+git clone https://github.com/4nkitd/gema-cli.git
+cd gema-cli
+go build -o gema
+```
+
+For easier access, move the binary to your PATH:
 
 ```bash
-$ curl -sSL https://git.io/gobackup | bash
+mv gema /usr/local/bin/
 ```
 
-To install Gema CLI, clone the repository and build the executable:
+## Setup
 
-```sh
-git clone https://github.com/4nkitd/gemini-cli.git
-cd gemini-cli
-go build -o ?
-```
+Before using Gema CLI, set your Gemini API key as an environment variable:
 
-## Usage
-
-Before using Gema CLI, you need to set the following environment variables:
-
-- `GENAI_DEFAULT_MODEL`: The default AI model to use.
-- `GENAI_API_KEY`: Your API key for accessing the AI service.
-
-You can set these environment variables in your terminal:
-
-```sh
-export GENAI_DEFAULT_MODEL="models/gemini-2.0-flash-exp" 
+```bash
 export GENAI_API_KEY=your_api_key
+export GENAI_DEFAULT_MODEL="models/gemini-2.0-flash-exp"
 ```
 
-To use Gema CLI, simply run the executable with your query:
+Add these to your `.bashrc`, `.zshrc`, or equivalent for persistence.
 
-```sh
-./? "your query here"
+## Commands
+
+### Text Refinement
+
+Revise text to make it more professional:
+
+```bash
+gema writer "Hey, can we meet to discuss the project?"
+gema revise "Hey, can we meet to discuss the project?" # alias
 ```
 
-Gema CLI will process your query, provide a response, and suggest a command to run. You will be prompted to confirm whether you want to execute the suggested command.
+Special formatting options:
+- Use `[length=X]` to specify approximate word count
+- Use `[type=email]` to format as a professional email
 
-## Example
-
-```sh
-./? "list all files in the current directory"
+Example:
+```bash
+gema writer "Need to reschedule our meeting tomorrow. Sorry for late notice." [type=email]
 ```
 
-Output:
+### AI Assistant
 
-```
-Response:
-Here is the command to list all files in the current directory:
+Ask questions and get command suggestions:
 
-Suggested Command to RUN: ls -la
-
-Run command (y for yes, n for no):
+```bash
+gema cli "how do I find large files in this directory?"
+gema ask "how do I find large files in this directory?" # alias
 ```
 
-If you type `y`, the command will be executed, and the output will be displayed.
+The command will:
+1. Process your query
+2. Show a response
+3. Suggest a terminal command
+4. Ask if you want to run the command
+
+### Git Commit Helper
+
+Generate AI-powered commit messages:
+
+```bash
+gema commit
+gema c # alias
+```
+
+You can also specify a repository path:
+```bash
+gema commit /path/to/repo
+```
+
+Or customize the prompt:
+```bash
+gema commit --prompt "Write a detailed commit message explaining the following changes:"
+```
 
 ## Contributing
 
-Contributions are welcome! Please open an issue or submit a pull request on GitHub.
+Contributions are welcome! Please feel free to submit a Pull Request.

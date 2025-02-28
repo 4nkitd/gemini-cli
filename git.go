@@ -21,6 +21,13 @@ var GitCommitCmd = &cobra.Command{
 		path := "."
 		if len(args) > 0 {
 			path = args[0]
+		} else {
+			// Use the directory where command is executed
+			currentDir, err := os.Getwd()
+			if err != nil {
+				return fmt.Errorf("failed to get current directory: %w", err)
+			}
+			path = currentDir
 		}
 
 		info, err := os.Stat(path)
