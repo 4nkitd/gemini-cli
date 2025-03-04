@@ -98,8 +98,10 @@ func AskQuery(query string, imageBytes [][]byte) AiResponse {
 		log.Fatal("Response field is missing or not a string")
 	}
 
-	StoreCommandHistory(query, result.Response)
-
+	errDb := StoreCommandHistory(query, result.Response)
+	if errDb != nil {
+		log.Fatal(errDb)
+	}
 	return result
 }
 
