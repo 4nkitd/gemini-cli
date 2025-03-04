@@ -87,6 +87,24 @@ Or customize the prompt:
 gema commit --prompt "Write a detailed commit message explaining the following changes:"
 ```
 
+### Co Pilot
+
+Get assistance with anything on your screen:
+
+```bash
+gema assist "explain this error message"
+gema a "explain this error message" # alias
+gema copilot "suggest improvements for this code" # alias
+gema assistant "what does this output mean?" # alias
+```
+
+The Co Pilot feature analyzes text from your terminal and provides helpful explanations, suggestions, or guidance based on the content.
+
+Example:
+```bash
+gema assist "What's wrong with this command: grep -l 'function' | xargs sed 's/old/new/g'"
+```
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.

@@ -64,7 +64,7 @@ func extractGeminiText(selectedText string) (string, error) {
 	`, selectedText)
 
 	// Use the AskQuery function from gemini.go
-	response := AskQuery(systemPrompt)
+	response := AskQuery(systemPrompt, nil)
 
 	// Return the response text, trimming any whitespace
 	return strings.TrimSpace(response.Response), nil

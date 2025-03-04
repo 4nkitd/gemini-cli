@@ -128,7 +128,7 @@ func GenerateCommitMessage(path, systemPrompt string) (string, []string) {
 		limitDiffSize(string(diffOutput), 4000)) // Limit diff size to avoid token limits
 
 	// Use AskQuery from gemini.go
-	result := AskQuery(query)
+	result := AskQuery(query, nil)
 	return result.Response, changedFiles
 }
 

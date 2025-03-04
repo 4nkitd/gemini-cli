@@ -57,7 +57,7 @@ func waitForResponse(m model) model {
 	}()
 
 	time.Sleep(3 * time.Second)
-	genaiResponse := AskQuery(m.query)
+	genaiResponse := AskQuery(m.query, nil)
 	done <- true
 	fmt.Print("\r") // Clear the loading line
 

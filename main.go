@@ -14,6 +14,7 @@ type model struct {
 }
 
 func main() {
+
 	rootCmd := &cobra.Command{
 		Use:   "ai",
 		Short: "A CLI tool to execute commands",
@@ -24,6 +25,8 @@ func main() {
 	rootCmd.AddCommand(WriterCmd)
 
 	rootCmd.AddCommand(GitCommitCmd)
+
+	rootCmd.AddCommand(CoPilotCmd)
 
 	if err := rootCmd.Execute(); err != nil {
 		log.Fatalf("Error executing root command: %v", err)

@@ -17,7 +17,7 @@ type AiResponse struct {
 	Command  string `json:"command"`
 }
 
-func AskQuery(query string) AiResponse {
+func AskQuery(query string, imageBytes [][]byte) AiResponse {
 
 	apiKey := os.Getenv("GENAI_API_KEY")
 	if apiKey == "" {
@@ -47,7 +47,23 @@ func AskQuery(query string) AiResponse {
 
 	finalPrompt := sysInfo + SystemInstruction
 
-	model.SystemInstruction = &genai.Content{Parts: []genai.Part{genai.Text(finalPrompt)}}
+	SystemInstruction := []genai.Part{
+		genai.Text(finalPrompt),
+	}
+
+	attachMents := []genai.Part{}
+
+	attachMents = append(attachMents, genai.Text(query))
+
+	for _, imgBytes := range imageBytes {
+		if imageBytes != nil {
+
+			attachMents = append(attachMents, genai.ImageData("image/jpeg", imgBytes))
+		}
+	}
+
+	model.SystemInstruction = &genai.Content{Parts: SystemInstruction}
+
 	model.ResponseMIMEType = "application/json"
 	model.ResponseSchema = &genai.Schema{
 		Type: genai.TypeObject,
@@ -62,7 +78,7 @@ func AskQuery(query string) AiResponse {
 		Required: []string{"response"},
 	}
 
-	resp, err := model.GenerateContent(ctx, genai.Text(query))
+	resp, err := model.GenerateContent(ctx, attachMents...)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -81,6 +97,8 @@ func AskQuery(query string) AiResponse {
 	if result.Response == "" {
 		log.Fatal("Response field is missing or not a string")
 	}
+
+	StoreCommandHistory(query, result.Response)
 
 	return result
 }
