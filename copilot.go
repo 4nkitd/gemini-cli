@@ -19,6 +19,13 @@ var CoPilotCmd = &cobra.Command{
 	Long:    `Help user with anything on his/her screen.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 
+		if len(args) > 0 {
+			if textToSpeech {
+				RunTts(args[0])
+				return nil
+			}
+		}
+
 		// Indicate processing
 		processingMsg := color.New(color.FgYellow).PrintFunc()
 		processingMsg("Starting Gema tray application...\n")
@@ -27,6 +34,12 @@ var CoPilotCmd = &cobra.Command{
 
 		return nil
 	},
+}
+
+var textToSpeech bool = false
+
+func init() {
+	CoPilotCmd.Flags().BoolVarP(&textToSpeech, "tts", "t", false, "Clean output for text-to-speech")
 }
 
 func onReady() {
@@ -123,4 +136,16 @@ func RunCopilot() {
 
 	fmt.Printf("[%s] Gema Assistant completed\n", time.Now().Format("15:04:05"))
 	fmt.Println("--------------------------------------------------")
+}
+
+func RunTts(query string) {
+
+	if !textToSpeech {
+		return
+	}
+	imgBytes, _ := Screenshot()
+
+	genaiResponse := AskQuery(query, [][]byte{imgBytes})
+	fmt.Println(genaiResponse.Response)
+
 }
