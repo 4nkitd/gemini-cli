@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat</title>
+  <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+  <style>
+    .message-user {
+      background-color: #f3f4f6;
+      border-radius: 1rem 1rem 1rem 0;
+    }
+    .message-ai {
+      background-color: #eff6ff;
+      border-radius: 1rem 1rem 0 1rem;
+    }
+    .message-container {
+      transition: opacity 0.3s ease-in-out;
+    }
+    .typing-indicator {
+      display: inline-flex;
+      gap: 0.3rem;
+    }
+    .typing-indicator span {
+      width: 8px;
+      height: 8px;
+      background: #6b7280;
+      border-radius: 50%;
+      opacity: 0.6;
+      animation: bounce 1.5s infinite;
+    }
+    .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+    .copy-button {
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .message-ai:hover .copy-button {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <div class="containerm p-4 bg-white">
+    <!-- Heading -->
+    <div class="flex items-center justify-between pb-4 border-b">
+      <div>
+        <h2 class="font-semibold text-lg tracking-tight">Gema</h2>
+        <p class="text-sm text-gray-500">
+          <a href="https://github.com/4nkitd" target="_blank" class="text-blue-
+            500 hover:underline">Made by https://github.com/4nkitd</a>
+        </p>
+      </div>
+      <button id="clear-chat" class="text-sm text-gray-500 hover:text-gray-700">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"></svg>
+          <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Chat Container -->
+    <div id="chat-history" class="flex flex-col gap-4 py-4 overflow-y-auto" style="height: calc(100vh - 220px); min-height: 400px;">
+      <!-- Messages will be inserted here -->
+    </div>
+
+    <div id="markdown-section" class="border rounded-lg p-4 mb-4 hidden bg-gray-50">
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="text-sm font-medium">Additional Information</h3>
+        <button id="close-markdown" class="text-gray-500 hover:text-gray-700">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"></svg>
+            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+          </svg>
+        </button>
+      </div>
+      <div id="markdown-preview" class="prose prose-sm max-w-none">
+        <!-- Markdown content will be rendered here -->
+      </div>
+    </div>
+
+    <!-- Input box -->
+    <div class="flex items-center pt-4 border-t mt-2">
+      <div class="flex items-center justify-center w-full space-x-2">
+        <input
+          id="chat-input"
+          class="flex h-10 w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+          placeholder="Type your message" 
+          autocomplete="off">
+        <button
+          id="send-button"
+          class="inline-flex items-center justify-center rounded-md text-sm font-medium text-white disabled:opacity-50 bg-blue-600 hover:bg-blue-700 h-10 px-4 py-2">
+          Send
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const chatHistory = document.getElementById('chat-history');
+    const chatInput = document.getElementById('chat-input');
+    const sendButton = document.getElementById('send-button');
+    const markdownSection = document.getElementById('markdown-section');
+    const markdownPreview = document.getElementById('markdown-preview');
+    const clearChatButton = document.getElementById('clear-chat');
+    const closeMarkdownButton = document.getElementById('close-markdown');
+    
+    let isWaitingForResponse = false;
+    
+    // Event listeners
+    sendButton.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keypress', (event) => {
+      if (event.key === 'Enter') {
+        sendMessage();
+      }
+    });
+    
+    clearChatButton.addEventListener('click', () => {
+      if (confirm('Clear all messages?')) {
+        chatHistory.innerHTML = '';
+      }
+    });
+    
+    closeMarkdownButton.addEventListener('click', () => {
+      markdownSection.classList.add('hidden');
+    });
+
+    function sendMessage() {
+      const message = chatInput.value;
+      if (message.trim() === '' || isWaitingForResponse) return;
+
+      appendMessage('user', message);
+      chatInput.value = '';
+      
+      // Show typing indicator
+      isWaitingForResponse = true;
+      const typingIndicator = document.createElement('div');
+      typingIndicator.id = 'typing-indicator';
+      typingIndicator.className = 'message-container p-4 message-ai';
+      typingIndicator.innerHTML = `
+        <div class="flex gap-3 text-gray-600 text-sm flex-1">
+          <span class="relative flex shrink-0 overflow-hidden rounded-full w-8 h-8">
+            <div class="rounded-full bg-blue-100 border p-1">
+              <svg stroke="none" fill="black" stroke-width="1.5" viewBox="0 0 24 24" 
+                aria-hidden="true" height="20" width="20" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z">
+                </path>
+              </svg>
+            </div>
+          </span>
+          <div class="flex flex-col">
+            <span class="font-bold text-gray-700">AI</span>
+            <div class="typing-indicator mt-1">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+        </div>`;
+      chatHistory.appendChild(typingIndicator);
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+
+      // Send to API and get response
+      fetch('http://localhost:8080/answer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message: message })
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Remove typing indicator
+        document.getElementById('typing-indicator').remove();
+        isWaitingForResponse = false;
+        
+        const response = data.message;
+        appendMessage('ai', response);
+
+        if (data.markdown) {
+          markdownPreview.innerHTML = data.markdown;
+          markdownSection.classList.remove('hidden');
+        }
+      })
+      .catch(error => {
+        // Remove typing indicator
+        document.getElementById('typing-indicator').remove();
+        isWaitingForResponse = false;
+        
+        console.error('Error:', error);
+        appendMessage('ai', 'Error fetching response. Please try again.');
+      });
+    }
+
+    function appendMessage(sender, message) {
+      const now = new Date();
+      const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      
+      const messageElement = document.createElement('div');
+      messageElement.className = `message-container p-4 message-${sender}`;
+      
+      if (sender === 'user') {
+        messageElement.innerHTML = `
+          <div class="flex gap-3 text-gray-600 text-sm flex-1">
+            <span class="relative flex shrink-0 overflow-hidden rounded-full w-8 h-8">
+              <div class="rounded-full bg-gray-100 border p-1">
+                <svg stroke="none" fill="black" stroke-width="0" viewBox="0 0 16 16" 
+                  height="20" width="20" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z">
+                  </path>
+                </svg>
+              </div>
+            </span>
+            <div class="flex flex-col flex-1">
+              <div class="flex justify-between">
+                <span class="font-bold text-gray-700">You</span>
+                <span class="text-xs text-gray-400">${time}</span>
+              </div>
+              <p class="whitespace-pre-wrap">${message}</p>
+            </div>
+          </div>`;
+      } else {
+        const messageId = `ai-message-${Date.now()}`;
+        messageElement.innerHTML = `
+          <div class="flex gap-3 text-gray-600 text-sm flex-1">
+            <span class="relative flex shrink-0 overflow-hidden rounded-full w-8 h-8">
+              <div class="rounded-full bg-blue-100 border p-1">
+                <svg stroke="none" fill="black" stroke-width="1.5" viewBox="0 0 24 24" 
+                  aria-hidden="true" height="20" width="20" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z">
+                  </path>
+                </svg>
+              </div>
+            </span>
+            <div class="flex flex-col flex-1">
+              <div class="flex justify-between">
+                <span class="font-bold text-gray-700">AI</span>
+                <span class="text-xs text-gray-400">${time}</span>
+              </div>
+              <p id="${messageId}" class="whitespace-pre-wrap">${message}</p>
+              <button class="copy-button text-xs text-gray-500 hover:text-blue-500 mt-2 self-end" 
+                onclick="navigator.clipboard.writeText(document.getElementById('${messageId}').innerText)
+                  .then(() => { this.textContent = 'Copied!'; setTimeout(() => { this.textContent = 'Copy'; }, 2000); })">
+                Copy
+              </button>
+            </div>
+          </div>`;
+      }
+      
+      chatHistory.appendChild(messageElement);
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+  });
+  </script>
+</body>
+</html>

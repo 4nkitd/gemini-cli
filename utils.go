@@ -2,14 +2,20 @@ package main
 
 import (
 	"bytes"
+	"embed"
 	"fmt"
 	"image/jpeg"
+	"io/fs"
+	"log"
 	"os/exec"
 	"runtime"
 	"strings"
 
 	"github.com/kbinani/screenshot"
 )
+
+//go:embed web
+var embeddedFiles embed.FS
 
 func Screenshot() ([]byte, error) {
 
@@ -111,4 +117,13 @@ func RecordAudio(seconds int) ([]byte, error) {
 
 	return audioBytes, nil
 
+}
+
+func getEmbeddedWebFS() fs.FS {
+	// Get the filesystem for the embedded web directory
+	fs, err := fs.Sub(embeddedFiles, "web")
+	if err != nil {
+		log.Fatalf("Error getting embedded web filesystem: %v", err)
+	}
+	return fs
 }

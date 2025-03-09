@@ -40,9 +40,12 @@ func AskQuery(query string, imageBytes [][]byte) AiResponse {
 	model.Temperature = &aiTemp
 
 	sysInfo := ""
-	sysErr := error(nil)
-	if sysInfo, sysErr = GetSystemInfo(); err != nil {
-		log.Fatal(sysErr)
+
+	if os.Getenv("SKIP_SYS_INFO") == "" {
+		sysErr := error(nil)
+		if sysInfo, sysErr = GetSystemInfo(); err != nil {
+			log.Fatal(sysErr)
+		}
 	}
 
 	finalPrompt := sysInfo + SystemInstruction

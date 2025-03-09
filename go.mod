@@ -7,6 +7,7 @@ require (
 	github.com/fatih/color v1.18.0
 	github.com/getlantern/systray v1.2.2
 	github.com/google/generative-ai-go v0.19.0
+	github.com/gorilla/mux v1.8.1
 	github.com/kbinani/screenshot v0.0.0-20250118074034-a3924b7bbc8c
 	github.com/mattn/go-sqlite3 v1.14.24
 	github.com/ncruces/zenity v0.10.14

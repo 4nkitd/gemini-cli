@@ -6,6 +6,31 @@ Gema CLI is an AI assistant for your terminal that leverages Gemini AI to help w
 
 [![Gema CLI Demo](https://img.youtube.com/vi/yklcZ4dNYWg/0.jpg)](https://www.youtube.com/watch?v=yklcZ4dNYWg)
 
+# Web UI
+![alt text](web/image.png)
+
+ WebCmd represents the web command which starts a web server for AI interactions.
+ It provides both a web UI and a REST API endpoint for asking questions to the AI.
+
+ The server automatically attempts to open the web interface in the default browser.
+ 
+### Usage:
+   gema-cli web
+
+### Environment Variables:
+   GENAI_PORT - Custom port to run the server on (defaults to 8080)
+
+### Web Interface:
+   http://localhost:8080/
+
+### API Endpoint:
+   POST http://localhost:8080/answer
+   Request Body: {"message": "your question", "history": {"previous question": "previous answer", ...}}
+   Response: {"message": "AI response"}
+
+> The web interface provides a user-friendly chat experience, while the API allows for
+ programmatic interaction with the AI assistant.
+
 ## Installation
 
 ```bash

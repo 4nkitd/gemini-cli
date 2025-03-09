@@ -28,6 +28,8 @@ func main() {
 
 	rootCmd.AddCommand(CoPilotCmd)
 
+	rootCmd.AddCommand(WebCmd)
+
 	if err := rootCmd.Execute(); err != nil {
 		log.Fatalf("Error executing root command: %v", err)
 	}
