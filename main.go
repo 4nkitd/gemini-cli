@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"runtime"
 
 	"github.com/spf13/cobra"
 )
@@ -26,7 +27,9 @@ func main() {
 
 	rootCmd.AddCommand(GitCommitCmd)
 
-	rootCmd.AddCommand(CoPilotCmd)
+	if runtime.GOOS == "windows" || runtime.GOOS == "darwin" {
+		rootCmd.AddCommand(CoPilotCmd)
+	}
 
 	rootCmd.AddCommand(WebCmd)
 
