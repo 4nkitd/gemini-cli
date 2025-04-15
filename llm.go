@@ -74,19 +74,21 @@ func AskQuery(query string, imageBytes [][]byte) AiResponse {
 	ctx := context.Background()
 
 	// Handle image attachments if present
-	// if len(imageBytes) > 0 {
-	// 	for _, imgBytes := range imageBytes {
-	// 		if imgBytes != nil {
-	// 			agent.AddImageContent(imgBytes)
-	// 		}
-	// 	}
-	// }
+	if len(imageBytes) > 0 {
+		for _, imgBytes := range imageBytes {
+			if imgBytes != nil {
+				agent.AddImageContent(imgBytes, "image/jpeg")
+			}
+		}
+	}
 
 	// Run the agent with the query
 	response, err := agent.Run(ctx, query)
 	if err != nil {
 		log.Fatalf("Error from agent: %v", err)
 	}
+
+	// fmt.Println("Response:", response.Content)
 
 	// Create a result object with default values
 	result := AiResponse{
@@ -121,6 +123,8 @@ func AskQuery(query string, imageBytes [][]byte) AiResponse {
 			if err := json.Unmarshal([]byte(response.Content), &jsonResult); err == nil {
 				result = jsonResult
 			}
+		} else {
+			result.Response = response.Content
 		}
 	}
 

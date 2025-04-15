@@ -3,16 +3,15 @@ module github.com/4nkitd/gemini-cli
 go 1.23.4
 
 require (
+	github.com/4nkitd/sapiens v0.1.3
 	github.com/elastic/go-sysinfo v1.15.0
 	github.com/fatih/color v1.18.0
 	github.com/getlantern/systray v1.2.2
-	github.com/google/generative-ai-go v0.19.0
 	github.com/gorilla/mux v1.8.1
 	github.com/kbinani/screenshot v0.0.0-20250118074034-a3924b7bbc8c
 	github.com/mattn/go-sqlite3 v1.14.24
 	github.com/ncruces/zenity v0.10.14
 	github.com/spf13/cobra v1.8.1
-	google.golang.org/api v0.227.0
 )
 
 require (
@@ -22,7 +21,6 @@ require (
 	cloud.google.com/go/auth/oauth2adapt v0.2.7 // indirect
 	cloud.google.com/go/compute/metadata v0.6.0 // indirect
 	cloud.google.com/go/longrunning v0.5.7 // indirect
-	github.com/4nkitd/sapiens v0.1.2 // indirect
 	github.com/akavel/rsrc v0.10.2 // indirect
 	github.com/dchest/jsmin v0.0.0-20220218165748-59f39799265f // indirect
 	github.com/elastic/go-windows v1.0.0 // indirect
@@ -38,8 +36,7 @@ require (
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-stack/stack v1.8.1 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
-	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	github.com/golang/protobuf v1.5.4 // indirect
+	github.com/google/generative-ai-go v0.19.0 // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.6 // indirect
@@ -61,7 +58,6 @@ require (
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/tidwall/sjson v1.2.5 // indirect
-	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.59.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.59.0 // indirect
@@ -78,6 +74,7 @@ require (
 	golang.org/x/sys v0.31.0 // indirect
 	golang.org/x/text v0.23.0 // indirect
 	golang.org/x/time v0.11.0 // indirect
+	google.golang.org/api v0.227.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20250106144421-5f5ef82da422 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250313205543-e70fdf4c4cb4 // indirect
 	google.golang.org/grpc v1.71.0 // indirect
