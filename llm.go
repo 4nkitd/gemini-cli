@@ -35,17 +35,21 @@ func AskQuery(query string, imageBytes [][]byte) AiResponse {
 	// Create a Sapiens agent
 	agent := sapiens.NewAgent("GemaCLI", llm, apiKey, defaultModel, "google")
 
-	// Add system prompt
-	sysInfo := ""
-	if os.Getenv("SKIP_SYS_INFO") == "" {
-		sysErr := error(nil)
-		if sysInfo, sysErr = GetSystemInfo(); sysErr != nil {
-			log.Fatal(sysErr)
-		}
+	// Define system info tool
+	sysInfoTool := sapiens.Tool{
+		Name:        "get_system_info",
+		Description: "Get detailed system information including hardware, OS, memory usage, and running processes",
 	}
 
-	finalPrompt := sysInfo + SystemInstruction
-	agent.AddSystemPrompt(finalPrompt, "1.0")
+	// Add the system info tool to the agent
+	agent.AddTools(sysInfoTool)
+	// Register tool implementation
+	agent.RegisterToolImplementation("get_system_info", func(params map[string]interface{}) (interface{}, error) {
+		return GetSystemInfo(params)
+	})
+
+	// Add system prompt (without system info directly embedded)
+	agent.AddSystemPrompt(SystemInstruction, "1.0")
 
 	// Define schema for structured output
 	schema := sapiens.Schema{

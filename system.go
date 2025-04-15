@@ -7,7 +7,7 @@ import (
 	system "github.com/elastic/go-sysinfo"
 )
 
-func GetSystemInfo() (string, error) {
+func GetSystemInfo(params map[string]interface{}) (string, error) {
 	host, err := system.Host()
 	if err != nil {
 		return "", err
