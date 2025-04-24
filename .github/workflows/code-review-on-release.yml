@@ -1,0 +1,183 @@
+
+name: Code Review on Release Publication
+
+# Trigger the workflow when a release is published
+on:
+  release:
+    types: [published]
+
+jobs:
+  review_and_report:
+    name: Run Code Review & Attach Report
+    runs-on: ubuntu-latest
+
+    # Grant permissions to write to the release (to upload assets)
+    permissions:
+      contents: write # Required to attach assets to the release
+      security-events: write # Required for actions like dependency-review or codeql
+
+    steps:
+      - name: Checkout Code at Release Tag
+        uses: actions/checkout@v4
+        with:
+          # Check out the specific tag associated with the release
+          ref: ${{ github.event.release.tag_name }}
+          # Fetch all history for tools that analyze commit history (like changelog tools, if added later)
+          fetch-depth: 0
+
+      # --- Environment Setup (Customize based on your project) ---
+      - name: Set up Node.js (Example)
+        if: success() # Run only if previous steps succeed, adjust as needed
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*' # Use a specific version or LTS
+          cache: 'npm' # Optional: Cache npm dependencies
+
+      - name: Set up Python (Example)
+        if: success()
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          # cache: 'pip' # Optional: Cache pip dependencies
+
+      - name: Install Dependencies (Example)
+        if: success()
+        run: |
+          # Add commands relevant to your project to install tools/dependencies
+          # Example for Node.js:
+          # npm ci
+          # Example for Python:
+          # pip install -r requirements-dev.txt
+          echo "Install linters, scanners, and project dependencies here"
+          # Example: Install common tools if not part of project deps
+          # npm install -g eslint # Or use npx eslint later
+          # pip install semgrep trufflehog # Or use docker images / dedicated actions
+
+      # --- Code Review Steps (Add/Replace with your actual tools) ---
+
+      - name: Run Linter (e.g., ESLint)
+        id: lint
+        if: success()
+        run: |
+          echo "Running Linter..."
+          # Replace with your actual lint command
+          # Example: npx eslint . --format stylish --output-file lint_report.txt
+          echo "Dummy lint report content." > lint_report.txt
+          echo "Linter check finished. Report generated: lint_report.txt"
+        continue-on-error: true # Continue even if linter finds issues, so other steps run
+
+      - name: Run Security Scan (e.g., Semgrep - SARIF Output)
+        id: sast
+        if: success()
+        run: |
+          echo "Running SAST Scan..."
+          # Replace with your actual SAST command. Outputting to SARIF is common.
+          # Example: semgrep scan --sarif -o sast_report.sarif --config "p/ci"
+          echo '{"version": "2.1.0", "$schema": "https://json.schemastore.org/sarif-2.1.0.json", "runs": [{"tool": {"driver": {"name": "Dummy Scanner"}}, "results": []}]}' > sast_report.sarif
+          echo "SAST scan finished. Report generated: sast_report.sarif"
+        continue-on-error: true
+
+      - name: Analyze Dependencies (GitHub Dependency Review Action)
+        id: depcheck
+        if: success()
+        uses: actions/dependency-review-action@v4
+        # This action automatically fails if vulnerabilities are found (configurable)
+        # It primarily uses the UI/Security tab but can be configured.
+        # For reporting, you might rely on its output status or parse logs if needed.
+        continue-on-error: true
+
+      - name: Scan for Secrets (e.g., TruffleHog)
+        id: secrets
+        if: success()
+        run: |
+          echo "Running Secret Scan..."
+          # Replace with your actual secret scan command
+          # Example: trufflehog filesystem . --json > secrets_report.json
+          echo "[]" > secrets_report.json # Dummy empty JSON array
+          echo "Secret scan finished. Report generated: secrets_report.json"
+        continue-on-error: true
+
+      # --- Report Aggregation (Optional but Recommended) ---
+      - name: Aggregate Reports into Markdown Summary
+        id: aggregate
+        if: always() # Run this even if previous steps had errors (to report what *did* run)
+        run: |
+          echo "## Code Review Summary for Release: ${{ github.event.release.tag_name }}" > review_summary.md
+          echo "" >> review_summary.md
+          echo "**Timestamp:** $(date)" >> review_summary.md
+          echo "" >> review_summary.md
+
+          echo "### Linter Status: ${{ steps.lint.outcome }}" >> review_summary.md
+          if [ -f lint_report.txt ]; then
+            echo "\`lint_report.txt\` generated." >> review_summary.md
+            # Optionally add top N lines: head -n 10 lint_report.txt >> review_summary.md
+          fi
+          echo "" >> review_summary.md
+
+          echo "### SAST Scan Status: ${{ steps.sast.outcome }}" >> review_summary.md
+          if [ -f sast_report.sarif ]; then
+            echo "\`sast_report.sarif\` generated (standard format for security findings)." >> review_summary.md
+          fi
+          echo "" >> review_summary.md
+
+          echo "### Dependency Check Status: ${{ steps.depcheck.outcome }}" >> review_summary.md
+          echo "(Check GitHub Security Tab or step logs for details)" >> review_summary.md
+          echo "" >> review_summary.md
+
+          echo "### Secret Scan Status: ${{ steps.secrets.outcome }}" >> review_summary.md
+          if [ -f secrets_report.json ]; then
+            # Check if secrets were found (example assumes empty JSON array means none)
+            if [ "$(jq 'length' secrets_report.json)" -gt 0 ]; then
+               echo "**Potential secrets found!** See \`secrets_report.json\` for details." >> review_summary.md
+            else
+               echo "No secrets found." >> review_summary.md
+            fi
+          fi
+          echo "" >> review_summary.md
+          echo "---" >> review_summary.md
+          echo "*Note: See attached files for full details. 'failure' status indicates issues were found by the tool.*" >> review_summary.md
+
+      # --- Upload Reports to Release ---
+      - name: Upload Aggregated Summary Report
+        if: always() # Try to upload summary even if some steps failed
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./review_summary.md
+          asset_name: code-review-summary-${{ github.event.release.tag_name }}.md
+          asset_content_type: text/markdown
+
+      - name: Upload Linter Report
+        if: steps.lint.outcome == 'success' || steps.lint.outcome == 'failure' # If the step ran
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./lint_report.txt
+          asset_name: lint-report-${{ github.event.release.tag_name }}.txt
+          asset_content_type: text/plain
+
+      - name: Upload SAST Report (SARIF)
+        if: steps.sast.outcome == 'success' || steps.sast.outcome == 'failure'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./sast_report.sarif
+          asset_name: sast-report-${{ github.event.release.tag_name }}.sarif
+          asset_content_type: application/sarif+json
+
+      - name: Upload Secrets Report (JSON)
+        if: steps.secrets.outcome == 'success' || steps.secrets.outcome == 'failure'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./secrets_report.json
+          asset_name: secrets-report-${{ github.event.release.tag_name }}.json
+          asset_content_type: application/json
