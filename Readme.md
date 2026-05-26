@@ -1,10 +1,12 @@
-# Gema CLI
+# gemini-cli
 
-Gema CLI is an AI assistant for your terminal that leverages Gemini AI to help with text refinement, command suggestions, and Git commit messages. It's designed to make your terminal experience more productive through AI-powered assistance.
+A terminal AI assistant powered by Google Gemini. Helps with text refinement, command suggestions, Git commit messages, and ad-hoc questions about whatever's on your screen.
+
+> **Not affiliated with Google's `gemini-cli`.** This is a separate project that predates Google's tool of the same name.
 
 ## DEMO
 
-[![Gema CLI Demo](https://img.youtube.com/vi/yklcZ4dNYWg/0.jpg)](https://www.youtube.com/watch?v=yklcZ4dNYWg)
+[![gemini-cli Demo](https://img.youtube.com/vi/yklcZ4dNYWg/0.jpg)](https://www.youtube.com/watch?v=yklcZ4dNYWg)
 
 # Web UI
 ![alt text](web/image.png)
@@ -15,7 +17,7 @@ Gema CLI is an AI assistant for your terminal that leverages Gemini AI to help w
  The server automatically attempts to open the web interface in the default browser.
  
 ### Usage:
-   gema-cli web
+   gemini-cli web
 
 ### Environment Variables:
    GENAI_PORT - Custom port to run the server on (defaults to 8080)
@@ -34,20 +36,20 @@ Gema CLI is an AI assistant for your terminal that leverages Gemini AI to help w
 ## Installation
 
 ```bash
-git clone https://github.com/4nkitd/gema-cli.git
-cd gema-cli
-go build -o gema
+git clone https://github.com/4nkitd/gemini-cli.git
+cd gemini-cli
+go build -o gemini-cli .
 ```
 
 For easier access, move the binary to your PATH:
 
 ```bash
-mv gema /usr/local/bin/
+mv gemini-cli /usr/local/bin/
 ```
 
 ## Setup
 
-Before using Gema CLI, set your Gemini API key and default model as environment variables:
+Before using gemini-cli, set your Gemini API key and default model as environment variables:
 
 ```bash
 export GENAI_API_KEY=your_api_key
@@ -65,8 +67,8 @@ Add these to your `.bashrc`, `.zshrc`, or equivalent for persistence.
 Revise text to make it more professional:
 
 ```bash
-gema writer "Hey, can we meet to discuss the project?"
-gema revise "Hey, can we meet to discuss the project?" # alias
+gemini-cli writer "Hey, can we meet to discuss the project?"
+gemini-cli revise "Hey, can we meet to discuss the project?" # alias
 ```
 
 Special formatting options:
@@ -75,7 +77,7 @@ Special formatting options:
 
 Example:
 ```bash
-gema writer "Need to reschedule our meeting tomorrow. Sorry for late notice." [type=email]
+gemini-cli writer "Need to reschedule our meeting tomorrow. Sorry for late notice." [type=email]
 ```
 
 ### AI Assistant
@@ -83,8 +85,8 @@ gema writer "Need to reschedule our meeting tomorrow. Sorry for late notice." [t
 Ask questions and get command suggestions:
 
 ```bash
-gema cli "how do I find large files in this directory?"
-gema ask "how do I find large files in this directory?" # alias
+gemini-cli cli "how do I find large files in this directory?"
+gemini-cli ask "how do I find large files in this directory?" # alias
 ```
 
 The command will:
@@ -98,18 +100,18 @@ The command will:
 Generate AI-powered commit messages:
 
 ```bash
-gema commit
-gema c # alias
+gemini-cli commit
+gemini-cli c # alias
 ```
 
 You can also specify a repository path:
 ```bash
-gema commit /path/to/repo
+gemini-cli commit /path/to/repo
 ```
 
 Or customize the prompt:
 ```bash
-gema commit --prompt "Write a detailed commit message explaining the following changes:"
+gemini-cli commit --prompt "Write a detailed commit message explaining the following changes:"
 ```
 
 ### Co Pilot
@@ -117,17 +119,17 @@ gema commit --prompt "Write a detailed commit message explaining the following c
 Get assistance with anything on your screen:
 
 ```bash
-gema assist "explain this error message"
-gema a "explain this error message" # alias
-gema copilot "suggest improvements for this code" # alias
-gema assistant "what does this output mean?" # alias
+gemini-cli assist "explain this error message"
+gemini-cli a "explain this error message" # alias
+gemini-cli copilot "suggest improvements for this code" # alias
+gemini-cli assistant "what does this output mean?" # alias
 ```
 
 The Co Pilot feature analyzes text from your terminal and provides helpful explanations, suggestions, or guidance based on the content.
 
 Example:
 ```bash
-gema assist "What's wrong with this command: grep -l 'function' | xargs sed 's/old/new/g'"
+gemini-cli assist "What's wrong with this command: grep -l 'function' | xargs sed 's/old/new/g'"
 ```
 
 ## Contributing
